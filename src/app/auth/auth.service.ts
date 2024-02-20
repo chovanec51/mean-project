@@ -37,7 +37,11 @@ export class AuthService {
 
         this.http.post<{message: string, result: any}>('http://localhost:3000/api/users/signup', authData).subscribe({
             next: response => {
-                console.log(response);
+                this.router.navigate(['/login']);
+                alert(response.message);
+            },
+            error: err => {
+                this._authStatusEmitter.next(false);
             }
         })
     }
@@ -62,6 +66,9 @@ export class AuthService {
                     const expirationDate = new Date(now.getTime() + response.expiresIn*1000);
                     this.saveAuthData(this._token, expirationDate, this._userId);
                 }
+            },
+            error: err => {
+                this._authStatusEmitter.next(false);
             }
         });
     }

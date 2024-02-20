@@ -1,24 +1,28 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { PostsService } from '../posts.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Post } from '../post.model';
 import { mimeTypeValidator } from './mime-type.validator';
+import { Subscription } from 'rxjs';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-post-create',
   templateUrl: './post-create.component.html',
   styleUrl: './post-create.component.css'
 })
-export class PostCreateComponent implements OnInit {
+export class PostCreateComponent implements OnInit, OnDestroy {
   enteredTitle = "";
   enteredContent = "";
   post: Post | null = null;
   isLoading = false;
   form: FormGroup;
   imagePreview: string;
+  private authStatusSUb: Subscription;
 
-  constructor(public postsService: PostsService, public route: ActivatedRoute, private fb: FormBuilder) {
+  constructor(public postsService: PostsService, public route: ActivatedRoute, private authService: AuthService,
+  fb: FormBuilder) {
     this.form = fb.group({
       'title': ['', [Validators.required, Validators.minLength(3)]],
       'content': ['', [Validators.required]],
@@ -27,6 +31,12 @@ export class PostCreateComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.authStatusSUb = this.authService.authStatusEmitter.subscribe({
+      next: status => {
+        this.isLoading=false;
+      }
+    })
+
     this.route.paramMap.subscribe({
       next: paramMap => {
         if (paramMap.has('postId')) {
@@ -79,6 +89,10 @@ export class PostCreateComponent implements OnInit {
       this.imagePreview = reader.result as string;
     };
     reader.readAsDataURL(file);
+  }
+
+  ngOnDestroy(): void {
+      this.authStatusSUb.unsubscribe();
   }
 
   get title() {

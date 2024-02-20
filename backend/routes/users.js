@@ -22,19 +22,21 @@ router.post("/signup", (req, res, next) => {
                 });
             }).catch(err => {
                 res.status(500).json({
-                    error: err
+                    message: "Invalid authetication credentials!", 
+                    reason: "Email has already been registered"
                 });
             });
         });
 });
 
 router.post("/login", (req, res, next) => {
+    let errMessage = "Invalid authetication credentials!"; 
     let fetchedUser;
     User.findOne({ email: req.body.email })
         .then(user => {
             if (!user) {
                 return res.status(401).json({
-                    message: "Authetication failed",
+                    message: errMessage,
                     reason: "User was not found"
                 });
             }
@@ -47,7 +49,7 @@ router.post("/login", (req, res, next) => {
             }
             if (!doPasswordMatch) {
                 return res.status(401).json({
-                    message: "Authetication failed",
+                    message: errMessage,
                     reason: "Incorrect password"
                 });
             }
@@ -57,7 +59,7 @@ router.post("/login", (req, res, next) => {
                 { expiresIn: '1h' }
             );
             res.status(200).json({
-                message: "Authentication success",
+                message: errMessage,
                 token: token,
                 expiresIn: 3600,
                 userId: fetchedUser._id
@@ -65,8 +67,7 @@ router.post("/login", (req, res, next) => {
         })
         .catch(err => {
             return res.status(401).json({
-                message: "Authetication failed",
-                reason: err
+                message: "Authetication failed"
             });
         });
 });

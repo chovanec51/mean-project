@@ -38,6 +38,9 @@ export class PostListComponent implements OnInit, OnDestroy {
       next: isUserAutheticated => {
         this.userId = this.authService.userId;
         this.isAuthenticated = isUserAutheticated;
+      },
+      error: () => {
+        this.isLoading = false;
       }
     })
   }
@@ -47,6 +50,9 @@ export class PostListComponent implements OnInit, OnDestroy {
     this.postsService.deletePost(postId).subscribe({
       next: () => {
         this.postsService.getPosts(this.postsPerPage, this.currentPage);
+      },
+      error: () => {
+        this.isLoading = false;
       }
     });
   }

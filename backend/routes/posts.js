@@ -34,15 +34,21 @@ router.post("", checkAuth, multer({storage: storage}).single("image"), (req, res
         imagePath: url + '/images/' + req.file.filename,
         creator: req.userData.userId
     });
-    post.save().then(createdPost => {
-        res.status(201).json({
-            message: 'Post added succesfully.',
-            post: {
-                ...createdPost,
-                id: createdPost._id
-            }
-        });
-    });    
+    post.save()
+        .then(createdPost => {
+            res.status(201).json({
+                message: 'Post added succesfully.',
+                post: {
+                    ...createdPost,
+                    id: createdPost._id
+                }
+            });
+        })
+        .catch(error => {
+            res.status(500).json({
+                message: "Post failed to be created."
+            });
+        });    
 });
 
 router.put('/:id', checkAuth, multer({storage: storage}).single("image"), (req, res, next) => {
@@ -70,6 +76,11 @@ router.put('/:id', checkAuth, multer({storage: storage}).single("image"), (req, 
                     message: "User is not authorized."
                 });
             }
+        })
+        .catch(error => {
+            res.status(500).json({
+                message: "Post failed to be updated."
+            });
         });
 });
 
@@ -83,6 +94,11 @@ router.get('/:id', (req, res, next) => {
                 res.status(404).json({message: "Post not found."});
             }
         })
+        .catch(error => {
+            res.status(500).json({
+                message: "Post failed to be fetched."
+            });
+        });
 });
 
 router.get('', (req, res, next) => {
@@ -107,6 +123,11 @@ router.get('', (req, res, next) => {
                 posts: fetchedPosts,
                 totalCount: count
             });
+        })
+        .catch(error => {
+            res.status(500).json({
+                message: "Posts failed to be fetched."
+            });
         });
 });
 
@@ -124,6 +145,11 @@ router.delete('/:id', checkAuth, (req, res, next) => {
                     message: "User is not authorized."
                 });
             }
+        })
+        .catch(error => {
+            res.status(500).json({
+                message: "Post failed to be deleted."
+            });
         });
 });
 
