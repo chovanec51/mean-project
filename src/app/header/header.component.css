@@ -7,8 +7,17 @@ ul {
 a {
     text-decoration: none;
     color: white;
+    margin-left: 5px;
+}
+
+a.active {
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .spacer {
     flex: 1 1 auto;
+}
+
+ul {
+    display: flex;
 }
